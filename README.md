@@ -12,6 +12,7 @@ A cada 5 segundos recarrega a página, lê os contadores diretamente do browser 
 | `monitor-dashboard.sh` | macOS | Monitor inteligente — lê DOM, notifica e abre fila |
 | `browser-refresh.sh` | macOS | Recarrega o browser a cada 5s via AppleScript |
 | `iniciar-monitor.sh` | macOS | Menu interativo de inicialização |
+| `parar-monitor.sh` | macOS | Encerra todos os monitores em execução |
 | `monitor-globoservice.js` | macOS / Windows | Verifica status HTTP da URL a cada 5s |
 | `browser-refresh.ps1` | Windows | Versão PowerShell do refresh (não usar no Mac) |
 | `iniciar-monitor.bat` | Windows | Menu para Windows (não usar no Mac) |
@@ -36,7 +37,7 @@ node --version   # verificar instalação
 cd ~/Desktop/project-globo-service-inc
 
 # Dar permissão de execução (apenas uma vez)
-chmod +x monitor-dashboard.sh browser-refresh.sh iniciar-monitor.sh
+chmod +x monitor-dashboard.sh browser-refresh.sh iniciar-monitor.sh parar-monitor.sh
 ```
 
 ---
@@ -50,10 +51,44 @@ chmod +x monitor-dashboard.sh browser-refresh.sh iniciar-monitor.sh
 ```
 
 ```text
-  [1] Monitor Inteligente  — lê INCs e Tarefas, notifica e abre fila  [RECOMENDADO]
+  [1] Monitor Inteligente  — abre em nova janela, roda em segundo plano  [RECOMENDADO]
   [2] Monitor HTTP         — verifica status HTTP da URL a cada 5s
   [3] Browser Refresh      — apenas recarrega o browser a cada 5s
   [4] HTTP + Refresh       — monitores 2 e 3 em janelas separadas
+
+  [0] Parar tudo           — encerra todos os monitores em execução
+```
+
+Todas as opções que iniciam um monitor abrem uma **nova janela do Terminal**, mantendo o menu disponível para outras ações.
+
+---
+
+## Encerrando os monitores
+
+### Pelo menu
+
+```bash
+./iniciar-monitor.sh   # escolha opção 0
+```
+
+### Direto pelo terminal
+
+```bash
+./parar-monitor.sh
+```
+
+O script identifica e encerra os três monitores se estiverem rodando, exibindo os PIDs de cada processo finalizado:
+
+```text
+════════════════════════════════════════════════════════
+  Encerrando Monitor GloboService
+════════════════════════════════════════════════════════
+
+  ✔ Monitor HTTP encerrado        (PIDs: 12345)
+  ✔ Browser Refresh encerrado     (PIDs: 12346)
+  ✔ Monitor Inteligente encerrado (PIDs: 12347)
+
+  3 processo(s) encerrado(s) com sucesso.
 ```
 
 ---
@@ -86,7 +121,7 @@ As listas abertas no Chrome já chegam pré-filtradas com dois critérios combin
 | Designado | `assignment_group` | `operação publicação` |
 | Status | `state_label` | `aguardando atendimento` |
 
-A query enviada ao ServiceNow combina os filtros com `^` (AND):
+Query enviada ao ServiceNow (`^` = AND):
 
 ```text
 assignment_group.nameLIKEoperação publicação^state_labelLIKEaguardando atendimento
@@ -186,9 +221,3 @@ Shell → AppleScript → Chrome → JavaScript → innerText das cards → JSON
 ```
 
 O JavaScript percorre as linhas de texto da página procurando pelos títulos das cards e captura o número imediatamente abaixo — sem depender de seletores CSS específicos da versão do ServiceNow.
-
----
-
-## Encerrando
-
-Pressione **`Ctrl+C`** em qualquer terminal para encerrar o monitoramento.
