@@ -8,6 +8,7 @@ BOLD='\033[1m'
 RESET='\033[0m'
 YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
+RED='\033[0;31m'
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -23,10 +24,16 @@ echo -e "  ${YELLOW}[2] Monitor HTTP${RESET}        — verifica status HTTP da 
 echo -e "  ${YELLOW}[3] Browser Refresh${RESET}     — apenas recarrega o browser a cada 5s"
 echo -e "  ${YELLOW}[4] HTTP + Refresh${RESET}      — monitores 2 e 3 em janelas separadas"
 echo ""
-read -rp "  Escolha (1, 2, 3 ou 4): " opcao
+echo -e "  ${RED:-\033[0;31m}[0] Parar tudo${RESET}          — encerra todos os monitores em execução"
+echo ""
+read -rp "  Escolha (0, 1, 2, 3 ou 4): " opcao
 echo ""
 
 case "$opcao" in
+  0)
+    chmod +x "$DIR/parar-monitor.sh"
+    "$DIR/parar-monitor.sh"
+    ;;
   1)
     echo -e "  ${GREEN}Iniciando Monitor Inteligente...${RESET}"
     chmod +x "$DIR/monitor-dashboard.sh"
@@ -58,7 +65,7 @@ APPLESCRIPT
     read -r
     ;;
   *)
-    echo "  Opção inválida. Execute novamente e escolha entre 1 e 4."
+    echo "  Opção inválida. Execute novamente e escolha entre 0 e 4."
     exit 1
     ;;
 esac
