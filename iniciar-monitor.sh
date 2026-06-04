@@ -35,9 +35,15 @@ case "$opcao" in
     "$DIR/parar-monitor.sh"
     ;;
   1)
-    echo -e "  ${GREEN}Iniciando Monitor Inteligente...${RESET}"
+    echo -e "  ${GREEN}Abrindo Monitor Inteligente em nova janela...${RESET}"
     chmod +x "$DIR/monitor-dashboard.sh"
-    "$DIR/monitor-dashboard.sh"
+    osascript <<APPLESCRIPT
+tell application "Terminal"
+  do script "chmod +x \"$DIR/monitor-dashboard.sh\" && \"$DIR/monitor-dashboard.sh\""
+end tell
+APPLESCRIPT
+    echo -e "  Monitor aberto em segundo plano. Pressione Enter para fechar este menu."
+    read -r
     ;;
   2)
     echo -e "  ${YELLOW}Iniciando Monitor HTTP...${RESET}"
