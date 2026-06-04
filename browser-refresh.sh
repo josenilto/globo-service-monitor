@@ -20,18 +20,30 @@ detect_browser() {
   fi
 }
 
-# Recarrega a aba ativa no browser
+# Recarrega especificamente a aba com a URL do ServiceNow
 reload_browser() {
   local browser="$1"
+  local target="globoservice.service-now.com"
 
   case "$browser" in
     "Google Chrome"|"Microsoft Edge")
       osascript <<APPLESCRIPT
 tell application "$browser"
-  activate
-  tell active tab of front window
-    reload
-  end tell
+  set target to "$target"
+  set reloaded to false
+  repeat with w in windows
+    repeat with t in tabs of w
+      if URL of t contains target then
+        reload t
+        set reloaded to true
+        exit repeat
+      end if
+    end repeat
+    if reloaded then exit repeat
+  end repeat
+  if not reloaded then
+    open location "$URL"
+  end if
 end tell
 APPLESCRIPT
       ;;
@@ -48,8 +60,21 @@ APPLESCRIPT
     "Safari")
       osascript <<APPLESCRIPT
 tell application "Safari"
-  activate
-  do JavaScript "location.reload(true)" in current tab of front window
+  set target to "$target"
+  set reloaded to false
+  repeat with w in windows
+    repeat with t in tabs of w
+      if URL of t contains target then
+        do JavaScript "location.reload(true)" in t
+        set reloaded to true
+        exit repeat
+      end if
+    end repeat
+    if reloaded then exit repeat
+  end repeat
+  if not reloaded then
+    open location "$URL"
+  end if
 end tell
 APPLESCRIPT
       ;;

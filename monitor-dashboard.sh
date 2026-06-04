@@ -49,14 +49,25 @@ elapsed() {
   printf "%02d:%02d:%02d" $((diff/3600)) $(((diff%3600)/60)) $((diff%60))
 }
 
-# Recarrega a aba ativa do Chrome
+# Recarrega especificamente a aba do ServiceNow no Chrome
 reload_chrome() {
-  osascript <<'APPLESCRIPT' 2>/dev/null
+  osascript <<APPLESCRIPT 2>/dev/null
     tell application "Google Chrome"
-      activate
-      tell active tab of front window
-        reload
-      end tell
+      set target to "globoservice.service-now.com"
+      set reloaded to false
+      repeat with w in windows
+        repeat with t in tabs of w
+          if URL of t contains target then
+            reload t
+            set reloaded to true
+            exit repeat
+          end if
+        end repeat
+        if reloaded then exit repeat
+      end repeat
+      if not reloaded then
+        open location "$URL_DASHBOARD"
+      end if
     end tell
 APPLESCRIPT
 }
